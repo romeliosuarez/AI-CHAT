@@ -11,6 +11,7 @@ export interface User {
 export interface Session {
     user: User;
     expires: number;
+    issuedAt: any;
 }
 
 export interface GoogleUserInfo {
