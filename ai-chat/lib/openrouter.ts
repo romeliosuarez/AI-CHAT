@@ -20,7 +20,7 @@ export async function getDeepSeekResponse(
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
-                'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL,
+                'HTTP-Referer': 'https://chat-ai-portfolio.vercel.app',
                 'X-Title': 'AI Chat Portfolio',
                 'Content-Type': 'application/json',
             },
