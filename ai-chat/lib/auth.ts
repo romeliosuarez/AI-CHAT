@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { User, Session, GoogleUserInfo } from '@/types/auth';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default_secret_change_in_production';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export function createAuthToken(user: User): string {
     const expiresIn = '24h';
