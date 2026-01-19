@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romelio Suarez Weighted Graphs</title>
+    <link rel="stylesheet" href="src/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1><i class="fas fa-project-diagram"></i>Weighted Graphs Vizualizer</h1>
+            </div>
+
+        </header>
+
+        <div class="main-content">
+            <div class="panel editor-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-edit"></i> Graph Editor</h2>
+                </div>
+
+                <div class="section">
+                    <h3><i class="fas fa-plus-circle"></i> Add Node</h3>
+                    <div class="form-group">
+                        <label for="node-id">Node ID:</label>
+                        <input type="number" id="node-id" min="1" max="100" placeholder="Ex: 1 - 100" value="1">
+                        <button id="add-node-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Node
+                        </button>
+                    </div>
+                    <p class="help-text">IDs 1-100. Empty = auto-increment</p>
+                </div>
+
+                <div class="section">
+                    <h3><i class="fas fa-link"></i> Add Edge</h3>
+                    <div class="form-group">
+                        <label for="from-node">From:</label>
+                        <input type="number" id="from-node" min="1" placeholder="Origin">
+                    </div>
+                    <div class="form-group">
+                        <label for="to-node">To:</label>
+                        <input type="number" id="to-node" min="1" placeholder="Destiny">
+                    </div>
+                    <div class="form-group">
+                        <label for="edge-weight">Weight:</label>
+                        <input type="number" id="edge-weight" min="0.1" step="0.1" value="1.0" placeholder="Ex: 2.5">
+                    </div>
+                    <div class="form-group">
+                        <button id="add-edge-btn" class="btn btn-primary">
+                            <i class="fas fa-link"></i> Add Edge
+                        </button>
+                    </div>
+                    <p class="help-text" id="edge-help">Directed edges: A → B means one direction</p>
+                </div>
+
+                <div class="section">
+                    <h3><i class="fas fa-sliders-h"></i> Settings</h3>
+                    <div class="form-group">
+                        <label for="graph-type">Graph Type:</label>
+                        <select id="graph-type">
+                            <option value="directed">Directed</option>
+                            <option value="undirected">Undirected</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button id="clear-graph-btn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Clean Graph
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3><i class="fas fa-magic"></i> Quick Actions</h3>
+                    <div class="quick-actions">
+                        <button id="sample-graph-btn" class="btn btn-secondary">
+                            <i class="fas fa-star"></i> Sample Graph
+                        </button>
+                        <button id="reset-view-btn" class="btn btn-secondary">
+                            <i class="fas fa-crosshairs"></i> Reset View
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel visualization-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-eye"></i> Graph Visualization</h2>
+                    <div class="graph-controls">
+                        <button id="zoom-in" class="btn-icon" title="Zoom in">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button id="zoom-out" class="btn-icon" title="Zoom out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button id="center-graph" class="btn-icon" title="Center">
+                            <i class="fas fa-crosshairs"></i>
+                        </button>
+                        <button id="show-connections" class="btn-icon" title="Show Connections">
+                            <i class="fas fa-project-diagram"></i>
+                        </button>
+                        <button id="show-matrix" class="btn-icon" title="Show Adjacency Matrix">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="graph-container">
+                    <svg id="graph-svg" width="100%" height="100%"></svg>
+                    <div class="graph-empty-state">
+                        <i class="fas fa-project-diagram fa-4x"></i>
+                        <p>Add nodes and edges to start</p>
+                        <button id="add-sample-btn" class="btn btn-outline">
+                            <i class="fas fa-magic"></i> Add Sample Graph
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel results-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-calculator"></i> Dijkstra</h2>
+                </div>
+
+                <div class="section">
+                    <h3><i class="fas fa-play-circle"></i> Exec</h3>
+                    <div class="form-group">
+                        <label for="start-node">Start from:</label>
+                        <input type="number" id="start-node" min="1" placeholder="Ex: 1">
+                    </div>
+                    <div class="form-group">
+                        <label for="end-node">Finish:</label>
+                        <input type="number" id="end-node" min="1" placeholder="Ex: 5">
+                    </div>
+                    <button id="run-dijkstra-btn" class="btn btn-success">
+                        <i class="fas fa-bolt"></i> Find the Shortest Path
+                    </button>
+                    <div class="execution-info">
+                        <span id="execution-time"></span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3><i class="fas fa-chart-line"></i> Results</h3>
+                    <div class="results-container">
+                        <div class="result-item">
+                            <span class="result-label">Min distance:</span>
+                            <span id="distance-result" class="result-value">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Time:</span>
+                            <span id="time-result" class="result-value">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3><i class="fas fa-info-circle"></i> Graph Info</h3>
+                    <div class="stats-container">
+                        <div class="stat">
+                            <i class="fas fa-circle"></i>
+                            <span>Nodes: <span id="node-count">0</span></span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-link"></i>
+                            <span>Edges: <span id="edge-count">0</span></span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-sitemap"></i>
+                            <span>Type: <span id="graph-type-display">-</span></span>
+                        </div>
+                    </div>
+                    <div class="graph-details">
+                        <div class="detail">
+                            <span>Density:</span>
+                            <span id="graph-density">0%</span>
+                        </div>
+                        <div class="detail">
+                            <span>Avg Degree:</span>
+                            <span id="avg-degree">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3><i class="fas fa-history"></i> Recent Actions</h3>
+                    <div class="log-container" id="log-container">
+                        <div class="log-entry">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Welcome to Graph Visualizer</span>
+                            <span class="log-time">Just now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p>Created By Romelio Eugenio Suarez Espinosa</p>
+                <div class="footer-ctc">
+                    <a id="ctc" class="mail-link">
+                        Let's Talk
+                    </a>
+                    <a id="project-info" class="mail-link">
+                        About this Project
+                    </a>
+                </div>
+                <div class="footer-links">
+                    <span id="node-connections">Connections: 0</span>
+                    <span id="graph-status">Status: Ready</span>
+                    <span id="version">v1.0.0</span>
+                </div>
+            </div>
+        </footer>
+
+        <div id="matrix-modal" class="matrix-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-table"></i> Adjacency Matrix</h3>
+                    <button id="close-matrix" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="matrix-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+    <script src="src/third-controllers.js" type="module"></script>
+</body>
+
+</html>
