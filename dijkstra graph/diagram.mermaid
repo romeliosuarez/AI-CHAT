@@ -1,0 +1,28 @@
+graph TD
+    A["User / Frontend JS"] --> B["Web Interface"]
+    B --> C["Call Graph WASM Module"]
+
+    subgraph WASM_Module ["C++ Graph Module - WASM"]
+        C --> D["Graph Class"]
+        D --> E["adyList: Adjacency List"]
+        D --> F["distance: Distance Vector"]
+        D --> G["parent: Parent Vector"]
+
+        D --> H["connectNodes(u, v, weight)"]
+        D --> I["dijkstra(start, end)"]
+        D --> J["getPath(start, end)"]
+
+        I --> K["Initialize distance and parent vectors"]
+        I --> L["Create priority_queue<Edge> pq"]
+        I --> M["While pq is not empty"]
+        M --> N["Extract node with minimum distance"]
+        N --> O["For each adjacent edge"]
+        O --> P["If new distance < stored distance"]
+        P --> Q["Update distance and parent"]
+        M --> R["Return distance[end] or -1"]
+        J --> S["Reconstruct path using parent vector"]
+        S --> T["Reverse vector to correct order"]
+    end
+
+    R --> B
+    T --> B

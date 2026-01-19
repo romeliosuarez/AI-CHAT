@@ -1,6 +1,3 @@
-/* The `GraphRenderer` class is responsible for rendering and interacting with a graph visualization in
-an SVG element, providing methods for zooming, panning, highlighting paths, and handling node and
-edge interactions. */
 export default class GraphRenderer {
     constructor() {
         this.svg = null;
@@ -37,7 +34,6 @@ export default class GraphRenderer {
 
     createSVGGroups() {
         this.svg.innerHTML = '';
-
         this.defsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
         this.svg.appendChild(this.defsGroup);
 
@@ -277,8 +273,8 @@ export default class GraphRenderer {
 
     applyTransformations() {
         if (!this.svg) return;
-
-        const transformGroup = document.getElementById('transform-group') || this.createTransformGroup();
+        const transformGroup = document.getElementById('transform-group') ||
+            this.createTransformGroup();
         const rect = this.svg.getBoundingClientRect();
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
@@ -366,7 +362,6 @@ export default class GraphRenderer {
             ) || this.edgesGroup.querySelector(
                 `line[data-from="${to}"][data-to="${from}"]`
             );
-
             if (line) {
                 line.setAttribute('stroke', '#f72585');
                 line.setAttribute('stroke-width', this.highlightedStrokeWidth);

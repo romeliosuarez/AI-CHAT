@@ -89,6 +89,14 @@ export default class GraphBridge {
         }
     }
 
+    getPath(start, end) {
+        if (!this.currentGraph) {
+            throw new Error('No graph created. Call createGraph() first.');
+        }
+
+        return this.currentGraph.getPath(start, end);
+    }
+
     nodeExists(nodeId) {
         if (!this.currentGraph || !this.currentGraph.nodeExists) {
             return false;

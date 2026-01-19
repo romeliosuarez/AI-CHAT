@@ -1,5 +1,8 @@
-/* The `EdgesVisualizer` class in JavaScript provides methods to visualize connections, highlight
-edges, show adjacency matrix, and display graph diagnostics. */
+// public/js/modules/visualization/edgesVisualizer.js
+
+/**
+ * Visualizador especializado para mostrar conexiones de aristas
+ */
 export default class EdgesVisualizer {
     constructor(graphRenderer, edgesController) {
         this.graphRenderer = graphRenderer;
@@ -9,6 +12,7 @@ export default class EdgesVisualizer {
         this.highlightedNode = null;
         this.connectionLines = new Map();
         this.connectionLabels = new Map();
+
         this.init();
     }
 
@@ -49,6 +53,7 @@ export default class EdgesVisualizer {
         const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
         polygon.setAttribute('points', '0 0, 8 3.5, 0 7');
         polygon.setAttribute('fill', '#4cc9f0');
+
         arrow.appendChild(polygon);
         defs.appendChild(arrow);
 
@@ -64,6 +69,7 @@ export default class EdgesVisualizer {
         const polygonIncoming = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
         polygonIncoming.setAttribute('points', '8 0, 0 3.5, 8 7');
         polygonIncoming.setAttribute('fill', '#f8961e');
+
         arrowIncoming.appendChild(polygonIncoming);
         defs.appendChild(arrowIncoming);
 
@@ -89,7 +95,7 @@ export default class EdgesVisualizer {
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             }
-
+            
             .edge-tooltip::after {
                 content: '';
                 position: absolute;
@@ -99,21 +105,21 @@ export default class EdgesVisualizer {
                 border: 6px solid transparent;
                 border-top-color: rgba(0, 0, 0, 0.9);
             }
-
+            
             .tooltip-content {
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
             }
-
+            
             .tooltip-content strong {
                 color: #4cc9f0;
             }
-
+            
             .connection-highlight {
                 animation: pulse-connection 2s infinite;
             }
-
+            
             @keyframes pulse-connection {
                 0%, 100% {
                     stroke-opacity: 0.6;
@@ -128,25 +134,33 @@ export default class EdgesVisualizer {
 
     showAllConnections() {
         if (!this.connectionsGroup) return;
+
         this.clearConnections();
         this.isShowingConnections = true;
         this.connectionsGroup.style.display = 'block';
+
         const nodes = this.getNodesData();
         const edges = this.edgesController.getAllEdges();
+
         nodes.forEach(node => {
             this.showNodeConnections(node.id);
         });
+
         this.addEdgeTooltips();
     }
 
     showNodeConnections(nodeId) {
         if (!this.connectionsGroup) return;
+
         const node = this.getNodeData(nodeId);
         if (!node) return;
+
         const edges = this.edgesController.getEdgesByNode(nodeId);
+
         edges.forEach(edge => {
             this.highlightConnection(edge, nodeId);
         });
+
         this.highlightedNode = nodeId;
     }
 
@@ -154,8 +168,10 @@ export default class EdgesVisualizer {
         const fromNode = this.getNodeData(edge.from);
         const toNode = this.getNodeData(edge.to);
         if (!fromNode || !toNode) return;
+
         const isOutgoing = edge.from === sourceNodeId;
         const isIncoming = edge.to === sourceNodeId;
+
         let color, arrowId;
         if (isOutgoing) {
             color = '#4cc9f0';
@@ -167,19 +183,25 @@ export default class EdgesVisualizer {
             color = '#4361ee';
             arrowId = null;
         }
+
         const dx = toNode.x - fromNode.x;
         const dy = toNode.y - fromNode.y;
         const angle = Math.atan2(dy, dx);
         const radius = 20;
+
         const startX = fromNode.x + (radius * Math.cos(angle));
         const startY = fromNode.y + (radius * Math.sin(angle));
         const endX = toNode.x - (radius * Math.cos(angle));
         const endY = toNode.y - (radius * Math.sin(angle));
+
         const lineId = `${edge.from}-${edge.to}-${sourceNodeId}`;
         const line = this.createConnectionLine(startX, startY, endX, endY, color, arrowId, lineId);
+
         this.createConnectionLabel(edge, fromNode, toNode, color, lineId);
+
         this.highlightConnectedNode(edge.from, color);
         this.highlightConnectedNode(edge.to, color);
+
         this.connectionLines.set(lineId, line);
     }
 
@@ -194,12 +216,15 @@ export default class EdgesVisualizer {
         line.setAttribute('stroke-width', '4');
         line.setAttribute('stroke-opacity', '0.7');
         line.setAttribute('data-line-id', lineId);
+
         if (arrowId) {
             line.setAttribute('marker-end', `url(#${arrowId})`);
         }
+
         if (color === '#4361ee') {
             line.setAttribute('stroke-dasharray', '5,3');
         }
+
         this.connectionsGroup.appendChild(line);
         return line;
     }
@@ -207,12 +232,14 @@ export default class EdgesVisualizer {
     createConnectionLabel(edge, fromNode, toNode, color, lineId) {
         const midX = (fromNode.x + toNode.x) / 2;
         const midY = (fromNode.y + toNode.y) / 2;
+
         const dx = toNode.x - fromNode.x;
         const dy = toNode.y - fromNode.y;
         const angle = Math.atan2(dy, dx);
         const textOffset = 25;
         const textX = midX - textOffset * Math.sin(angle);
         const textY = midY + textOffset * Math.cos(angle);
+
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', textX);
         text.setAttribute('y', textY);
@@ -227,14 +254,17 @@ export default class EdgesVisualizer {
         text.setAttribute('stroke-width', '3');
         text.setAttribute('stroke-opacity', '0.8');
         text.setAttribute('paint-order', 'stroke');
+
         let label = `w:${edge.weight.toFixed(1)}`;
         if (edge.isDirected) {
             label = `${edge.from}→${edge.to} ${label}`;
         } else {
             label = `${edge.from}↔${edge.to} ${label}`;
         }
+
         text.textContent = label;
         this.connectionsGroup.appendChild(text);
+
         this.connectionLabels.set(lineId, text);
     }
 
@@ -244,10 +274,12 @@ export default class EdgesVisualizer {
             if (!circle.getAttribute('data-original-fill')) {
                 circle.setAttribute('data-original-fill', circle.getAttribute('fill'));
             }
+
             const lightenedColor = this.lightenColor(color, 40);
             circle.setAttribute('fill', lightenedColor);
             circle.setAttribute('stroke', color);
             circle.setAttribute('stroke-width', '3');
+
             circle.setAttribute('filter', 'url(#connection-glow)');
         }
     }
@@ -258,6 +290,7 @@ export default class EdgesVisualizer {
         const R = (num >> 16) + amt;
         const G = (num >> 8 & 0x00FF) + amt;
         const B = (num & 0x0000FF) + amt;
+
         return "#" + (
             0x1000000 +
             (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
@@ -269,12 +302,14 @@ export default class EdgesVisualizer {
     addEdgeTooltips() {
         setTimeout(() => {
             const edges = document.querySelectorAll('.graph-edge');
+
             edges.forEach(edge => {
                 edge.addEventListener('mouseenter', (e) => {
                     const from = e.target.getAttribute('data-from');
                     const to = e.target.getAttribute('data-to');
                     this.showEdgeDetails(from, to);
                 });
+
                 edge.addEventListener('mouseleave', () => {
                     this.hideEdgeDetails();
                 });
@@ -284,8 +319,10 @@ export default class EdgesVisualizer {
 
     showEdgeDetails(from, to) {
         this.hideEdgeDetails();
+
         const edge = this.edgesController.getEdgeObject(from, to);
         if (!edge) return;
+
         const tooltip = document.createElement('div');
         tooltip.className = 'edge-tooltip';
         tooltip.innerHTML = `
@@ -296,16 +333,21 @@ export default class EdgesVisualizer {
                 <div>Click to select nodes</div>
             </div>
         `;
+
         tooltip.id = 'edge-tooltip';
+
         const edgeElement = document.querySelector(`line[data-from="${from}"][data-to="${to}"]`);
         if (edgeElement) {
             const rect = edgeElement.getBoundingClientRect();
             const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
             tooltip.style.left = `${rect.left + rect.width / 2 + scrollLeft}px`;
             tooltip.style.top = `${rect.top - 10 + scrollTop}px`;
         }
+
         document.body.appendChild(tooltip);
+
         this.highlightEdge(from, to);
     }
 
@@ -316,6 +358,7 @@ export default class EdgesVisualizer {
             edgeLine.setAttribute('stroke', '#f72585');
             edgeLine.style.filter = 'drop-shadow(0 0 8px rgba(247, 37, 133, 0.5))';
         }
+
         [from, to].forEach(nodeId => {
             const circle = document.querySelector(`circle[data-node-id="${nodeId}"]`);
             if (circle) {
@@ -329,6 +372,7 @@ export default class EdgesVisualizer {
     hideEdgeDetails() {
         const tooltip = document.getElementById('edge-tooltip');
         if (tooltip) tooltip.remove();
+
         if (!this.isShowingConnections) {
             const edges = document.querySelectorAll('.graph-edge');
             edges.forEach(edge => {
@@ -336,6 +380,7 @@ export default class EdgesVisualizer {
                 edge.setAttribute('stroke', '#4361ee');
                 edge.style.filter = 'none';
             });
+
             const nodes = document.querySelectorAll('.graph-node');
             nodes.forEach(node => {
                 node.setAttribute('stroke', '#3a0ca3');
@@ -348,6 +393,7 @@ export default class EdgesVisualizer {
     showAdjacencyMatrix() {
         const nodes = this.getNodesData();
         const edges = this.edgesController.getAllEdges();
+
         const matrix = this.createAdjacencyMatrix(nodes, edges);
         this.displayMatrixModal(matrix, nodes);
     }
@@ -355,12 +401,14 @@ export default class EdgesVisualizer {
     createAdjacencyMatrix(nodes, edges) {
         const size = nodes.length;
         const matrix = Array(size).fill().map(() => Array(size).fill(0));
+
         const idToIndex = {};
         const indexToId = {};
         nodes.forEach((node, index) => {
             idToIndex[node.id] = index;
             indexToId[index] = node.id;
         });
+
         edges.forEach(edge => {
             const i = idToIndex[edge.from];
             const j = idToIndex[edge.to];
@@ -371,17 +419,20 @@ export default class EdgesVisualizer {
                 }
             }
         });
+
         return { matrix, indexToId };
     }
 
     displayMatrixModal(matrixData, nodes) {
         const { matrix, indexToId } = matrixData;
+
         let html = '<table class="adjacency-matrix">';
         html += '<thead><tr><th></th>';
         nodes.forEach(node => {
             html += `<th>${node.id}</th>`;
         });
         html += '</tr></thead>';
+
         html += '<tbody>';
         matrix.forEach((row, i) => {
             html += `<tr><th>${indexToId[i]}</th>`;
@@ -393,9 +444,11 @@ export default class EdgesVisualizer {
             html += '</tr>';
         });
         html += '</tbody></table>';
+
         const matrixContainer = document.getElementById('matrix-container');
         if (matrixContainer) {
             matrixContainer.innerHTML = html;
+
             const style = document.createElement('style');
             style.textContent = `
                 .adjacency-matrix {
@@ -442,6 +495,7 @@ export default class EdgesVisualizer {
                 }
             `;
             matrixContainer.appendChild(style);
+
             setTimeout(() => {
                 this.addMatrixCellEvents(matrix, indexToId);
             }, 100);
@@ -450,15 +504,18 @@ export default class EdgesVisualizer {
 
     addMatrixCellEvents(matrix, indexToId) {
         const cells = document.querySelectorAll('.adjacency-matrix td');
+
         cells.forEach((cell, index) => {
             const row = Math.floor(index / matrix.length);
             const col = index % matrix.length;
+
             if (matrix[row][col] !== 0) {
                 cell.addEventListener('mouseenter', () => {
                     const fromId = indexToId[row];
                     const toId = indexToId[col];
                     this.highlightMatrixConnection(fromId, toId);
                 });
+
                 cell.addEventListener('mouseleave', () => {
                     this.unhighlightMatrixConnection();
                 });
@@ -473,6 +530,7 @@ export default class EdgesVisualizer {
             edgeLine.setAttribute('stroke-width', '4');
             edgeLine.style.filter = 'drop-shadow(0 0 8px rgba(247, 37, 133, 0.5))';
         }
+
         [fromId, toId].forEach(nodeId => {
             const circle = document.querySelector(`circle[data-node-id="${nodeId}"]`);
             if (circle) {
@@ -491,6 +549,7 @@ export default class EdgesVisualizer {
                 edge.setAttribute('stroke-width', '2');
                 edge.style.filter = 'none';
             });
+
             const nodes = document.querySelectorAll('.graph-node');
             nodes.forEach(node => {
                 node.setAttribute('stroke', '#3a0ca3');
@@ -504,6 +563,7 @@ export default class EdgesVisualizer {
         if (this.graphRenderer && this.graphRenderer.getNodesData) {
             return this.graphRenderer.getNodesData();
         }
+
         const nodes = [];
         const circles = document.querySelectorAll('circle[data-node-id]');
         circles.forEach(circle => {
@@ -531,6 +591,7 @@ export default class EdgesVisualizer {
 
     hideConnections() {
         if (!this.connectionsGroup) return;
+
         this.isShowingConnections = false;
         this.connectionsGroup.style.display = 'none';
         this.clearConnections();
@@ -560,6 +621,7 @@ export default class EdgesVisualizer {
             node.setAttribute('stroke-width', '2');
             node.removeAttribute('filter');
         });
+
         const edges = document.querySelectorAll('.graph-edge');
         edges.forEach(edge => {
             edge.setAttribute('stroke', '#4361ee');
@@ -577,9 +639,11 @@ export default class EdgesVisualizer {
 
     showNodeDegrees() {
         const nodes = this.getNodesData();
+
         nodes.forEach(node => {
             const edges = this.edgesController.getEdgesByNode(node.id);
             const degree = edges.length;
+
             const circle = document.querySelector(`circle[data-node-id="${node.id}"]`);
             if (circle) {
                 const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -591,6 +655,7 @@ export default class EdgesVisualizer {
                 label.setAttribute('font-weight', 'bold');
                 label.textContent = `deg: ${degree}`;
                 label.setAttribute('data-degree-label', node.id);
+
                 this.connectionsGroup.appendChild(label);
             }
         });
@@ -598,6 +663,7 @@ export default class EdgesVisualizer {
 
     highlightEdgesByWeight(minWeight, maxWeight) {
         const edges = this.edgesController.getAllEdges();
+
         edges.forEach(edge => {
             if (edge.weight >= minWeight && edge.weight <= maxWeight) {
                 const line = document.querySelector(`line[data-from="${edge.from}"][data-to="${edge.to}"]`);
@@ -613,20 +679,25 @@ export default class EdgesVisualizer {
     showDiagnostics() {
         const nodes = this.getNodesData();
         const edges = this.edgesController.getAllEdges();
+
         console.log('=== Graph Diagnostics ===');
         console.log(`Nodes: ${nodes.length}`);
         console.log(`Edges: ${edges.length}`);
         console.log(`Directed: ${edges.some(e => e.isDirected)}`);
+
         const maxEdges = nodes.length * (nodes.length - 1) / 2;
         const density = maxEdges > 0 ? (edges.length / maxEdges * 100).toFixed(1) : 0;
         console.log(`Density: ${density}%`);
+
         const isolatedNodes = nodes.filter(node => {
             const nodeEdges = edges.filter(e => e.from === node.id || e.to === node.id);
             return nodeEdges.length === 0;
         });
+
         if (isolatedNodes.length > 0) {
             console.log(`Isolated nodes: ${isolatedNodes.map(n => n.id).join(', ')}`);
         }
+
         const zeroWeightEdges = edges.filter(e => e.weight === 0);
         if (zeroWeightEdges.length > 0) {
             console.log(`Zero-weight edges: ${zeroWeightEdges.map(e => `${e.from}→${e.to}`).join(', ')}`);

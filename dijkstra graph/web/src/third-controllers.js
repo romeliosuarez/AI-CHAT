@@ -1,4 +1,4 @@
-const ctc = document.getElementById('ctc');
+const ctc = document.getElementById('contact-btn');
 
 ctc.addEventListener('click', (e) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ ctc.addEventListener('click', (e) => {
 });
 
 
-const projectInfo = document.getElementById('project-info');
+const projectInfo = document.getElementById('info-btn');
 
 projectInfo.addEventListener('click', (e) => {
     e.preventDefault();

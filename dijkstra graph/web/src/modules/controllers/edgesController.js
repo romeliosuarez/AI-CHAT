@@ -1,6 +1,3 @@
-/* The `EdgesController` class manages edges in a graph visualization, allowing for the creation,
-retrieval, updating, and removal of edges, as well as providing statistics and path highlighting
-functionality. */
 export default class EdgesController {
     constructor() {
         this.edges = [];
