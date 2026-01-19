@@ -1,3 +1,5 @@
+import Swal from "https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js";
+
 const ctc = document.getElementById('ctc');
 
 ctc.addEventListener('click', (e) => {

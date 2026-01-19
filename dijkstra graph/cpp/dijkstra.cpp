@@ -1,3 +1,4 @@
+
 /**
  * The above code defines a C++ struct for a graph data structure with methods for connecting nodes and
  * finding the shortest path using Dijkstra's algorithm, and it includes bindings for Emscripten to
